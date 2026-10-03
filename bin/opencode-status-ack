@@ -1,0 +1,49 @@
+#!/bin/bash
+# opencode-status-ack — acknowledge one opencode alert.
+#
+# Invoked by clicking one of our notification toasts (attached via
+# `omarchy notification send --exec ... <summary>`), or by hand:
+#   opencode-status-ack "Needs input · my-app"
+#
+# Records the ack in opencode-status-acks.json, which BarWidget.qml reads:
+# the acknowledged alert drops out of the icon (but stays in the hover
+# tooltip as acknowledged) until a newer notification re-arms it.
+# Then dismisses its own toast so the screen is clean.
+#
+# Never fails loudly: ejection seat is silence, the blink simply persists.
+set -u
+
+SUMMARY="${1:-}"
+[[ -z "$SUMMARY" ]] && exit 0
+
+STATE_HOME="${XDG_STATE_HOME:-${HOME}/.local/state}"
+ACKS_FILE="$STATE_HOME/omarchy/opencode-status-acks.json"
+
+mkdir -p "$(dirname "$ACKS_FILE")" 2>/dev/null || exit 0
+
+python3 - "$ACKS_FILE" "$SUMMARY" <<'EOF' 2>/dev/null || exit 0
+import json, sys, time
+path, summary = sys.argv[1], sys.argv[2]
+try:
+    with open(path) as f:
+        data = json.load(f)
+    if not isinstance(data, dict) or not isinstance(data.get("acks"), list):
+        data = {"version": 1, "acks": []}
+except (OSError, ValueError):
+    data = {"version": 1, "acks": []}
+now = int(time.time() * 1000)
+data["acks"] = [a for a in data["acks"]
+                if isinstance(a, dict) and a.get("summary") != summary]
+data["acks"].append({"summary": summary, "at": now})
+data["acks"] = data["acks"][-50:]
+tmp = path + ".tmp-%d" % now
+with open(tmp, "w") as f:
+    json.dump(data, f)
+import os
+os.rename(tmp, path)
+EOF
+
+# Our own toast has served its purpose; take it off the screen.
+command -v omarchy >/dev/null 2>&1 || exit 0
+omarchy notification dismiss "$SUMMARY" >/dev/null 2>&1 || true
+exit 0

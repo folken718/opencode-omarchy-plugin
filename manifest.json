@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "folken.opencode-status",
+  "name": "opencode status",
+  "version": "0.1.0",
+  "author": "folken",
+  "license": "MIT",
+  "description": "Shows an opencode icon in the topbar while opencode is working, with an attention animation when it needs input. Notifications are sent by the companion opencode plugin.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "Widget.qml"
+  },
+  "barWidget": {
+    "displayName": "opencode status",
+    "description": "opencode activity indicator: visible only while working or waiting for input",
+    "category": "System",
+    "defaultSection": "center",
+    "allowMultiple": false,
+    "schema": [
+      {
+        "key": "colorWorking",
+        "type": "string",
+        "label": "Working color",
+        "description": "Line color while opencode is working. Hex like #4ade80.",
+        "defaultValue": "#4ade80"
+      },
+      {
+        "key": "colorWaiting",
+        "type": "string",
+        "label": "Needs-input color",
+        "description": "Line color the blink alternates to while opencode waits for input. Hex like #ef5350.",
+        "defaultValue": "#ef5350"
+      },
+      {
+        "key": "colorFlash",
+        "type": "string",
+        "label": "Done/error color",
+        "description": "Line color for the transient done/error flash. Empty follows the theme foreground.",
+        "defaultValue": ""
+      }
+    ]
+  }
+}

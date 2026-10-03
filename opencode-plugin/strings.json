@@ -1,0 +1,15 @@
+{
+  "_comment": "Notification copy for the opencode-status Omarchy plugin. Edit freely: changes apply to the next toast, no restart needed. Placeholders: {time} (local HH:MM), {detail} (terse reason), {project}. The ' · <project>' suffix on the summary is added by the plugin and is load-bearing (ack matching), so only title/body are customizable here. To override without touching this repo, copy this file to ~/.config/opencode/opencode-status-strings.json (partial files are fine: missing keys fall back to this file).",
+  "needsInput": {
+    "title": "Needs input",
+    "body": "{time} — {detail}"
+  },
+  "error": {
+    "title": "Error",
+    "body": "{time} — {detail}"
+  },
+  "done": {
+    "title": "Done",
+    "body": "{time} — {project}"
+  }
+}
